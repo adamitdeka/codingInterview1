@@ -1,5 +1,7 @@
+//api endpoints
 var lstEmp = "http://sandbox.bittsdevelopment.com/code1/fetchemployees.php";
 var lstRoles = "http://sandbox.bittsdevelopment.com/code1/fetchroles.php";
+
 //function to get data from api endpoints
 var getData = (url, callback) =>{
     var xhr = new XMLHttpRequest();
@@ -17,19 +19,7 @@ var getData = (url, callback) =>{
     xhr.send();
 }
 
-window.onload = () => {
-    getData(lstEmp, (err, data) =>{
-        if(err !== null){
-            console.log('Something is wrong:',err);
-        }
-        else{
-            console.log("script running");
-            console.log(Object.values(data));
-            Object.values(data).map(makeList);
-        }
-    });
-};
-
+//function to make employee list with given template
 function makeList(empObj){
     var output = document.getElementById('main-container');
     var empId = empObj.employeeid;
@@ -38,9 +28,13 @@ function makeList(empObj){
     var empBio = empObj.employeebio;
     var empRoles = empObj.roles;
     var empImg = "";
+
+    //assigning an image if the employee has pic
     if(empObj.employeehaspic == 1){
         empImg = "http://sandbox.bittsdevelopment.com/code1/employeepics/"+empId+".jpg";
     }
+
+    //card template
     var card = "<div class='card-container'>";
     card += "<div class='f-icon-outer'>";
     card +="<div id='crown-"+empId+"' class='f-icon-container'>";
@@ -57,16 +51,31 @@ function makeList(empObj){
     card +="</div>";
 
     output.innerHTML += card;
-    Object.values(empRoles).map(populateRoles);
+    
+    //function to populate roles
     function populateRoles(roleObj){
         var roleContainer = document.getElementById('role-container'+empId);
         roleContainer.innerHTML += "<span class='emp-roles' style = 'background-color:"+roleObj.rolecolor+"'>"+roleObj.rolename+"</span>";
     }
+    //populating roles of each employee using map function. 
+    Object.values(empRoles).map(populateRoles);
 
+    //checking if employee is featured
     if(empObj.employeeisfeatured != 1){
         document.getElementById('crown-'+empId).classList.add('hidden');
     }
 
-
-
 }
+
+window.onload = () => {
+    getData(lstEmp, (err, data) =>{
+        if(err !== null){
+            console.log('Something is wrong:',err);
+        }
+        else{
+            console.log("script running");
+            console.log(Object.values(data));
+            Object.values(data).map(makeList);
+        }
+    });
+};
